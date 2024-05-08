@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const TvSeries = require('../models/TvSeries');
-const TvSeriesDetails = require('../models/TvSeriesDetails');
+const TvSeriesDetails = require('../models/TvseriesDetails');
 
 
 // @desc    Get all tv series
