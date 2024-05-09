@@ -8,41 +8,51 @@ const Recommended = require('../models/Recommended');
 
 
 const router = express.Router();
-router.get('/', decode, async (req, res) => {
-    // const { userId } = req.query; // Assuming you pass the user identifier as a query parameter
-    const userId = req.body.firebaseId
+router.post('/', decode, async (req, res) => {
+    const userId = req.body.firebaseId;
+
     try {
-        // Find bookmarks for the specified user
         const userBookmarks = await Bookmark.findOne({ firebaseId: userId });
 
         if (!userBookmarks) {
             return res.status(404).json([{ message: 'User not found or has no bookmarks' }]);
         }
 
-        // Extract bookmark IDs for movies and TV series
-        const movieBookmarkIds = userBookmarks.bookmark
+        const movieBookmarkIds = new Set(userBookmarks.bookmark
             .filter(item => item.mediatype === 'movies')
-            .map(item => item.id);
-        const tvSeriesBookmarkIds = userBookmarks.bookmark
+            .map(item => item.id));
+        const tvSeriesBookmarkIds = new Set(userBookmarks.bookmark
             .filter(item => item.mediatype === 'tvseries')
-            .map(item => item.id);
+            .map(item => item.id));
 
-        // Find movies and TV series based on bookmark IDs
-        const movies = await Movie.find({ id: movieBookmarkIds });
-        const tendingmovies = await Trendings.find({ id: movieBookmarkIds });
-        const recommendedmovies = await Recommended.find({ id: movieBookmarkIds });
+        // Find movies in Movie schema
+        let movies = await Movie.find({ id: { $in: [...movieBookmarkIds] } });
+        // If some movies are not found, look for them in Trending and Recommended schemas
+        const missingMovieIds = [...movieBookmarkIds].filter(id => !movies.map(movie => movie.id).includes(id));
+        if (missingMovieIds.length > 0) {
+            const trendingMovies = await Trendings.find({ id: { $in: missingMovieIds } });
+            const recommendedMovies = await Recommended.find({ id: { $in: missingMovieIds } });
+            movies = [...movies, ...trendingMovies, ...recommendedMovies];
+        }
 
-        const tvSeries = await TvSeries.find({ id: tvSeriesBookmarkIds });
-        const trendingTvSeries = await Trendings.find({ id: tvSeriesBookmarkIds });
-        const recommendedTvSeries = await Recommended.find({ id: tvSeriesBookmarkIds });
+        // Find TV series in TVSeries schema
+        let tvSeries = await TVSeries.find({ id: { $in: [...tvSeriesBookmarkIds] } });
+        // If some TV series are not found, look for them in Trending and Recommended schemas
+        const missingTvSeriesIds = [...tvSeriesBookmarkIds].filter(id => !tvSeries.map(series => series.id).includes(id));
+        if (missingTvSeriesIds.length > 0) {
+            const trendingTvSeries = await Trendings.find({ id: { $in: missingTvSeriesIds } });
+            const recommendedTvSeries = await Recommended.find({ id: { $in: missingTvSeriesIds } });
+            tvSeries = [...tvSeries, ...trendingTvSeries, ...recommendedTvSeries];
+        }
 
         // Send the combined results
-        res.status(200).json([...movies, ...tendingmovies, ...recommendedmovies, ...tvSeries, trendingTvSeries, recommendedTvSeries]);
+        res.status(200).json([...movies, ...tvSeries]);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Failed to load bookmarks' });
     }
 });
+
 
 router.post('/add', decode, async (req, res) => {
     const { movieId, firebaseId, email, mediaType } = req.body;
