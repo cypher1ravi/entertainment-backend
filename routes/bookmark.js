@@ -26,12 +26,12 @@ router.post('/', decode, async (req, res) => {
             .map(item => item.id));
 
         // Find movies in Movie schema
-        let movies = await Movie.find({ id: { $in: [...movieBookmarkIds] } });
+        let movies = await Movie.find({ id: [...movieBookmarkIds] });
         // If some movies are not found, look for them in Trending and Recommended schemas
         const missingMovieIds = [...movieBookmarkIds].filter(id => !movies.map(movie => movie.id).includes(id));
         if (missingMovieIds.length > 0) {
-            const trendingMovies = await Trendings.find({ id: { $in: missingMovieIds } });
-            const recommendedMovies = await Recommended.find({ id: { $in: missingMovieIds } });
+            const trendingMovies = await Trendings.find({ id: missingMovieIds });
+            const recommendedMovies = await Recommended.find({ id: missingMovieIds });
             movies = [...movies, ...trendingMovies, ...recommendedMovies];
         }
 
@@ -40,8 +40,8 @@ router.post('/', decode, async (req, res) => {
         // If some TV series are not found, look for them in Trending and Recommended schemas
         const missingTvSeriesIds = [...tvSeriesBookmarkIds].filter(id => !tvSeries.map(series => series.id).includes(id));
         if (missingTvSeriesIds.length > 0) {
-            const trendingTvSeries = await Trendings.find({ id: { $in: missingTvSeriesIds } });
-            const recommendedTvSeries = await Recommended.find({ id: { $in: missingTvSeriesIds } });
+            const trendingTvSeries = await Trendings.find({ id: missingTvSeriesIds });
+            const recommendedTvSeries = await Recommended.find({ id: missingTvSeriesIds });
             tvSeries = [...tvSeries, ...trendingTvSeries, ...recommendedTvSeries];
         }
 
