@@ -8,7 +8,7 @@ const Recommended = require('../models/Recommended');
 
 
 const router = express.Router();
-router.post('/', decode, async (req, res) => {
+router.get('/', decode, async (req, res) => {
     const userId = req.body.firebaseId;
 
     try {
@@ -36,7 +36,7 @@ router.post('/', decode, async (req, res) => {
         }
 
         // Find TV series in TVSeries schema
-        let tvSeries = await TVSeries.find({ id: { $in: [...tvSeriesBookmarkIds] } });
+        let tvSeries = await TvSeries.find({ id: [...tvSeriesBookmarkIds] });
         // If some TV series are not found, look for them in Trending and Recommended schemas
         const missingTvSeriesIds = [...tvSeriesBookmarkIds].filter(id => !tvSeries.map(series => series.id).includes(id));
         if (missingTvSeriesIds.length > 0) {
