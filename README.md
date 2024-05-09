@@ -39,7 +39,6 @@ Backend Live Link:   https://entertainment-backend.vercel.app/
 2. Install dependencies and run server:
 #### Backend
 ```
-cd ../server
 npm install
 npm start
 ```
