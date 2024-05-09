@@ -3,6 +3,8 @@ const Bookmark = require('../models/Bookmark')
 const decode = require('../middleware/index');
 const Movie = require('../models/Movies')
 const TvSeries = require('../models/TvSeries')
+const Trendings = require('../models/Trending');
+const Recommended = require('../models/Recommended');
 
 
 const router = express.Router();
@@ -27,10 +29,15 @@ router.get('/', decode, async (req, res) => {
 
         // Find movies and TV series based on bookmark IDs
         const movies = await Movie.find({ id: movieBookmarkIds });
+        const tendingmovies = await Trendings.find({ id: movieBookmarkIds });
+        const recommendedmovies = await Recommended.find({ id: movieBookmarkIds });
+
         const tvSeries = await TvSeries.find({ id: tvSeriesBookmarkIds });
+        const trendingTvSeries = await Trendings.find({ id: tvSeriesBookmarkIds });
+        const recommendedTvSeries = await Recommended.find({ id: tvSeriesBookmarkIds });
 
         // Send the combined results
-        res.status(200).json([...movies, ...tvSeries]);
+        res.status(200).json([...movies, ...tendingmovies, ...recommendedmovies, ...tvSeries, trendingTvSeries, recommendedTvSeries]);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Failed to load bookmarks' });
