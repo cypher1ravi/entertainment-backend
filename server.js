@@ -13,7 +13,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors({ origin: "*" }))
+app.use(cors())
 app.use(bodyParser.json());
 
 // Database connection
