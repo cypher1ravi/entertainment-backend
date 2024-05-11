@@ -6,7 +6,6 @@ const moviesRouter = require('./routes/movies');
 const tvSeriesRouter = require('./routes/tvSeries');
 const additionalRouter = require('./routes/additional');
 const bookmarkRouter = require('./routes/bookmark');
-const documentation = require('./swagger');
 require('dotenv').config();
 
 const app = express();
@@ -30,7 +29,11 @@ app.use('/tvseries', tvSeriesRouter);
 app.use('/additional', additionalRouter);
 app.use('/bookmark', bookmarkRouter)
 
-app.use('/', documentation);
+app.get('/', (req, res,) => {
+    res.redirect("https://app.swaggerhub.com/apis/RAVINDRACHAUBEY410/entertainment-app/1.0.0")
+
+})
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
