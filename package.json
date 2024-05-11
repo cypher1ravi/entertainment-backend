@@ -26,6 +26,8 @@
     "firebase-admin": "^12.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.6.0",
-    "mongoose": "^8.2.4"
+    "mongoose": "^8.2.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   }
 }

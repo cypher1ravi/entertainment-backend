@@ -71,7 +71,7 @@ router.post('/add', decode, async (req, res) => {
         if (!bookmarkExists) {
             user.bookmark.push({ id: movieId, mediatype: mediaType });
             await user.save();
-            res.status(200).json({ message: "Added bookmark Successfully" });
+            res.status(201).json({ message: "Added bookmark Successfully" });
         } else {
             res.status(200).json({ message: "Bookmark already exists" });
         }

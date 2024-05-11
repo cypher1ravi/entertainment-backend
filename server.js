@@ -6,6 +6,7 @@ const moviesRouter = require('./routes/movies');
 const tvSeriesRouter = require('./routes/tvSeries');
 const additionalRouter = require('./routes/additional');
 const bookmarkRouter = require('./routes/bookmark');
+const documentation = require('./swagger');
 require('dotenv').config();
 
 const app = express();
@@ -23,14 +24,13 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 
+
 app.use('/movies', moviesRouter);
 app.use('/tvseries', tvSeriesRouter);
 app.use('/additional', additionalRouter);
 app.use('/bookmark', bookmarkRouter)
 
-app.get('/', (req, res,) => {
-    res.status(200).json("Server is now Listen")
-})
+app.use('/', documentation);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
